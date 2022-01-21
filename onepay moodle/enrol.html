@@ -1,0 +1,124 @@
+<div align="center">
+
+<p><?php print "This course requires payment for entry." ?></p>
+<p><b><?php echo $instancename; ?></b></p>
+<p><b><?php echo "Payment Amount".": {$instance->currency} {$localisedcost}"; ?></b></p>
+<br>
+<?php
+$id = required_param('id', PARAM_INT);
+    $use_sandbox = $this->get_config('onepaysandbox');
+    $onepayurl = '';
+    if ($use_sandbox){
+        $onepayurl = 'https://sandbox.onepay.lk/pay/checkout';
+    }
+    else {
+        $onepayurl = 'https://www.onepay.lk/pay/checkout';
+    }
+    
+    $merchant_id = $this->get_config('onepaymerchantid');
+    $app_id = $this->get_config('onepaymerchantid');
+    $app_id = '6U291187C4A79C11B0494';
+    $app_token = $this->get_config('onepaymerchantid');
+    $hash_salt = $this->get_config('onepaymerchantid');
+    $hash_salt = 'C9T31187C4A79C11B04C4';
+    $order_timestamp = time();
+    $order_id = "onepay_{$USER->id}_{$course->id}_{$order_timestamp}";
+    $onepay_amount = $cost;
+    $onepay_currency = $instance->currency;
+    $onepay_secret = $this->get_config('onepaymerchantsecret');
+    $frontend_hash = strtoupper (md5 ( $merchant_id . $order_id . $onepay_amount . $onepay_currency . strtoupper(md5($onepay_secret)) ) );
+    $reference = "1234567898";
+    
+
+
+?>
+<style>
+.btn.btn-success {
+    color: #fff;
+    background: #28664e;
+    border-color: #28664e;
+}
+.btn-block {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+.btn {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-transition: all .1s linear;
+    -moz-transition: all .1s linear;
+    transition: all .1s linear;
+}
+.btn-block {
+    display: block;
+    width: 100%;
+}
+.btn.btn-success.active, .btn.btn-success:active, .btn.btn-success:focus, .btn.btn-success:hover, .open .dropdown-toggle.btn-success {
+    background: #28664e;
+    border-color: #28664e;
+}
+.btn-success.active.focus, .btn-success.active:focus, .btn-success.active:hover, .btn-success:active.focus, .btn-success:active:focus, .btn-success:active:hover, .open>.dropdown-toggle.btn-success.focus, .open>.dropdown-toggle.btn-success:focus, .open>.dropdown-toggle.btn-success:hover {
+    color: #fff;
+    background-color: #28664e;
+    border-color: #28664e;
+}
+ /*.btn:focus, [type="submit"]:focus  {     
+   background-color:yellow;    */
+	/* border:5px !important;
+    
+} */
+.btn:focus, .button:focus, [type="submit"]:focus {
+   outline: #28664e;
+   padding-left: 12px;
+    padding-right: 12px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    -webkit-transition: all .1s linear;
+    -moz-transition: all .1s linear;
+    transition: all .1s linear;
+    border-color: #28664e !important;
+
+}
+
+</style> 
+<form action="<?php echo "$CFG->wwwroot/enrol/onepay/process.php" ?>" method="POST" id="<?php echo PARAM_INT ?>">
+<!--form action="<?php //echo $onepayurl; ?>" method="GET" id="<?php //echo PARAM_INT ?>"-->
+
+<input type="hidden" name="merchant_id" value="<?php echo $merchant_id ?>">
+<input type="hidden" name="app_id" value="<?php echo $app_id ?>">
+<input type="hidden" name="app_token" value="<?php echo $app_token ?>">
+<input type="hidden" name="hash_salt" value="<?php echo $hash_salt ?>">
+<input type="hidden" name="cost" value="<?php echo $cost ?>">
+<input type="hidden" name="return_url" value="<?php echo "$CFG->wwwroot/enrol/onepay/return.php?id=$course->id" ?>">
+<input type="hidden" name="cancel_url" value="<?php echo $CFG->wwwroot ?>">
+<input type="hidden" name="notify_url" value="<?php echo "$CFG->wwwroot/enrol/onepay/notify.php"?>">  
+
+<input type="hidden" name="order_id" value="<?php echo $order_id ?>"-->
+<input type="hidden" name="items" value="<?php echo "Course {$courseshortname} Payment" ?>">
+<input type="hidden" name="currency" value="<?php p($onepay_currency) ?>">
+<input type="hidden" name="amount" value="<?php p($onepay_amount) ?>">  
+
+<input type="hidden" name="first_name" value="<?php p($userfirstname) ?>" />
+<input type="hidden" name="last_name" value="<?php p($userlastname) ?>" />
+<input type="hidden" name="email" value="<?php p($USER->email) ?>" />
+<input type="hidden" name="phone" value="">
+<input type="hidden" name="address" value="<?php p($useraddress) ?>" />
+<input type="hidden" name="city" value="<?php p($usercity) ?>" />
+<input type="hidden" name="country" value="<?php p($USER->country) ?>" />
+<input type="hidden" name="course_id" value="<?php echo "{$course->id}" ?>" />
+
+<input type="hidden" name="custom_1" value="<?php echo "{$USER->id}-{$course->id}-{$instance->id}" ?>" />
+
+<input type="hidden" name="hash" value="<?php echo $hash_result ?>">
+<img src="<?php echo "$CFG->wwwroot/enrol/onepay/pix/"?>logo_onepay.png" alt="onepay">
+<!--input type="image" src="https://www.onepay.lk/assets/images/onepay_logo.png" width="180" alt="<?php print_string("sendpaymentbutton", "enrol_onepay") ?>" /-->
+<br><br>
+<input type="submit"  class=" btn btn-success" id="btn_submit" value="<?php print_string("sendpaymentbutton", "enrol_onepay") ?>" />
+
+</form>
+<script>
+
+</script>
+</div>
